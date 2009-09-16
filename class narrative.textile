@@ -1,0 +1,60 @@
+h1. Intro
+
+To talk about scaffolding we'll be building a piece of an example application.
+
+So as an example we're going to build an online cd store.
+
+h1. Building the Basic Application
+
+h2. Requirements and Dependencies
+
+* Ruby version 1.8.6 or 1.8.7
+* Rails version 2.3.4
+* Download the rails template from my github.  http://github.com/mmorga/active_scaffold_class
+* I'll be using the following gems:
+** mbleigh-acts-as-taggable-on
+** thoughtbot-shoulda
+** thoughtbot-factory_girl
+** mislav-will_paginate
+** mmorga-money
+** ruby-graphviz (if we have time)
+* Install graphviz also (which is required by the ruby-graphviz library)
+Starting off you'll want to run the template and create your baseline app framework.
+
+rails -m template.rb cdspin
+
+This will ask for your sudo password so it can install the required gems.
+
+h2. Build The First Model
+
+h3. First Time Try it Old School 
+
+*(to remember why we don't do this anymore)*
+
+script/generate scaffold album title:string release_date:datetime
+rake db:migrate
+script/server
+
+Browse to: http://localhost:3000/albums
+
+Pretty ugly, right?
+
+h2. Let's Make it a Little Better
+
+rm app/views/layouts/albums.html.erb
+
+Try - again.  Ooh that's a little nicer.  But the actual form sucks pretty bad.  So let's start up the active scaffold mojo.
+
+Add this to your application.html.erb layout:
+
+<%= javascript_include_tag :defaults %>
+<%= active_scaffold_includes %>
+
+And in your album controller, remove all of the lines in the class and replace with the following:
+
+  active_scaffold :album
+
+Also you need to remove all of the view files that were created.
+
+rm app/views/albums/*
+

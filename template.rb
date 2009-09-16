@@ -61,6 +61,7 @@ gem "thoughtbot-shoulda", :lib => "shoulda", :source => "http://gems.github.com"
 gem "thoughtbot-factory_girl", :lib => "factory_girl", :source => "http://gems.github.com"
 gem "mislav-will_paginate", :lib => "will_paginate", :source => "http://gems.github.com"
 gem "mmorga-money", :lib => "money", :source => "http://gems.github.com"
+gem "ruby-graphviz", :lib => "graphviz", :source => "http:www.rubyforge.org"
 
 # Install plugins as git submodules
 plugin 'asset_packager',
@@ -74,7 +75,15 @@ plugin 'authlogic',
 plugin 'annotate_models',
        :submodule => USE_GIT,
        :git => 'git://github.com/ctran/annotate_models.git'
- 
+
+plugin 'web-app-theme',
+      :submodule => USE_GIT,
+      :git => 'git://github.com/pilu/web-app-theme.git'
+
+plugin 'active_scaffold',
+      :submodule => USE_GIT,
+      :git => 'git://github.com/activescaffold/active_scaffold.git -r rails-2.2'
+
 # Initialize submodules
 git :submodule => "init" if USE_GIT
  
@@ -83,6 +92,8 @@ rake('gems:install', :sudo => true)
 rake('db:sessions:create')
 generate("authlogic", "user session")
  
+generate("theme", "application --app_name=\"CD Spin\" --theme=\"blue\"")
+
 # Database probably isn't created at this point...
 rake('db:migrate')
 rake('annotate_models')
