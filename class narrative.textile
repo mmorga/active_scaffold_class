@@ -58,3 +58,24 @@ Also you need to remove all of the view files that were created.
 
 rm app/views/albums/*
 
+h1. Other Topics
+
+* Adding scaffolds with relationships
+* Working with more complex data types (dates and money)
+* Configuring the display
+* Changing the presentation of fields
+** to_label
+** field overrides
+* Changing the input form fields
+** Form overrides
+*** Subforms    
+** Template overrides
+* Search
+** Configuration
+** LiveSearch
+* Security
+* More Complex Uses
+** Embedding the scaffold on other pages
+* Rendering
+** Constraints
+** Nested Constraints

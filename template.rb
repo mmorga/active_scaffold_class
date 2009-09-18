@@ -82,7 +82,7 @@ plugin 'web-app-theme',
 
 plugin 'active_scaffold',
       :submodule => USE_GIT,
-      :git => 'git://github.com/activescaffold/active_scaffold.git -r rails-2.2'
+      :git => 'git://github.com/activescaffold/active_scaffold.git'
 
 # Initialize submodules
 git :submodule => "init" if USE_GIT
