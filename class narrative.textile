@@ -27,11 +27,9 @@ This will ask for your sudo password so it can install the required gems.
 
 h2. Build The First Model
 
-h3. First Time Try it Old School 
+*First Time Try it Old School (to remember why we don't do this anymore)*
 
-*(to remember why we don't do this anymore)*
-
-script/generate scaffold album title:string release_date:datetime
+script/generate scaffold album title:string release_date:date
 rake db:migrate
 script/server
 
@@ -52,30 +50,91 @@ Add this to your application.html.erb layout:
 
 And in your album controller, remove all of the lines in the class and replace with the following:
 
-  active_scaffold :album
+  active_scaffold
 
 Also you need to remove all of the view files that were created.
 
 rm app/views/albums/*
 
+Looking again, the UI has changed a bit, looks a little bit nicer.
+
+h2. Working with Dates
+
+Looks good except the date is a little hokey still.  
+
+sudo gem install calendar_date_select
+
+Add to the config/environment.rb:
+ 
+config.gem "calendar_date_select" 
+
+Try it out.  Not bad.  But let's hide the created_at and updated_at fields and put the album title first.
+
+First, let's hide the timestamps via a global config.  In application_controller.rb
+
+ActiveScaffold.set_defaults do |config| 
+  config.ignore_columns.add [:created_at, :updated_at, :lock_version]
+end
+
+Then in the Album Controller:
+
+active_scaffold do |config|
+  config.columns = [:title, :release_date]
+end
+
+Ok - take another look.  Nice.
+
+Hrm - what about sorting?  Add this to the config:
+
+config.list.sorting = {:title => :asc}
+
+h3. Field Overrides
+
+And make the date format a little nicer.  Add this to the album_helper.rb:
+
+def release_date_column(record)
+  record.release_date.strftime("%m/%d/%Y")
+end
+
+This is called a field override.  You can use this to change the presentation of particular columns.  We'll do more of this later.  One application I've used is to make a column link to another model when that model isn't presented by active scaffold.
+
+h2. More Scaffold Configuration
+
+Just to be nit-picky, I'd rather have the Release Date be in title caps.  So...add this to the AlbumsController active scaffold config.
+
+config.columns[:release_date].label = "Release Date"
+
+Albums is kind of old-fashioned (showing my age a little).  Let's try changing the name in the UI.
+
+config.label = "CDs"
+
+h2. Adding a Price to the CD
+
+
+
 h1. Other Topics
 
+* Working with more complex data types (money)
+
 * Adding scaffolds with relationships
-* Working with more complex data types (dates and money)
-* Configuring the display
-* Changing the presentation of fields
-** to_label
-** field overrides
+** Changing the presentation of fields
+*** to_label
+
 * Changing the input form fields
+
 ** Form overrides
 *** Subforms    
 ** Template overrides
+
 * Search
 ** Configuration
 ** LiveSearch
+
 * Security
+
 * More Complex Uses
 ** Embedding the scaffold on other pages
+
 * Rendering
 ** Constraints
 ** Nested Constraints

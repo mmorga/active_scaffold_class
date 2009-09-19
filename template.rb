@@ -92,7 +92,7 @@ rake('gems:install', :sudo => true)
 rake('db:sessions:create')
 generate("authlogic", "user session")
  
-generate("theme", "application --app_name=\"CD Spin\" --theme=\"blue\"")
+generate("theme", "application --app_name=\"CD Spin\" --theme=\"bec-green\"")
 
 # Database probably isn't created at this point...
 rake('db:migrate')

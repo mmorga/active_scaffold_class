@@ -13,6 +13,8 @@ Rails::Initializer.run do |config|
   config.gem 'thoughtbot-factory_girl', :lib => 'factory_girl', :source => 'http://gems.github.com'
   config.gem 'thoughtbot-shoulda', :lib => 'shoulda', :source => 'http://gems.github.com'
   config.gem 'mbleigh-acts-as-taggable-on', :lib => 'acts-as-taggable-on', :source => 'http://gems.github.com'
+  config.gem "calendar_date_select"
+  
   # Settings in config/environments/* take precedence over those specified here.
   # Application configuration should go into files in config/initializers
   # -- all .rb files in that directory are automatically loaded.
