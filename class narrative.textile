@@ -104,17 +104,95 @@ Just to be nit-picky, I'd rather have the Release Date be in title caps.  So...a
 
 config.columns[:release_date].label = "Release Date"
 
+Since our CD sales will work for release dates from the turn of the 20th century...
+
+config.columns[:release_date].options = {:year_range => 1900..Date.today.year}
+
 Albums is kind of old-fashioned (showing my age a little).  Let's try changing the name in the UI.
 
 config.label = "CDs"
 
 h2. Adding a Price to the CD
 
+Ok - now we'll add some money to the mix.  I'm using a fork of the money gem in which I've fixed a couple of bugs and added functionality to make it work for ActiveScaffold.
 
+Create a migration:
+
+script/generate migration add_price_to_album
+
+class AddPriceToAlbum < ActiveRecord::Migration
+  def self.up
+    add_column :albums, :price_in_cents, :integer, :default => 0
+    add_column :albums, :currency, :string, :default => "USD"
+  end
+
+  def self.down
+    drop_column :albums, :price_in_cents
+    drop_column :albums, :currency, :string
+  end
+end
+
+rake db:migrate
+
+Ok - Now we need to display the price appropriately in the UI.
+
+So let's tell rails how to treat those two columns as money.
+
+composed_of is a rails method of building an attribute in a model out of one or more columns.  The best documentation for this is in active record in a file named aggregations.rb.
+
+Add this to the Album model:
+
+composed_of :price, :class_name => "Money", 
+    :mapping => [%w(price_in_cents cents), %w(currency currency)],
+    :converter => Proc.new {|value| value.to_money}
+
+Then add to the config:
+config.columns = [:title, :release_date, :price]
+
+Take a look.  Cool, but let's add the currency symbol.  Add to the helper:
+
+def price_column(record)
+  record.price.format
+end
+
+h2. Substituting the Field Input for the Money
+
+Ok, let's say we want to change how the input works for our price.  We can substitute our own version of that fragment of the form.
+
+Create a partial named _price_form_column.html.erb in the app/views/albums directory.
+
+Now - if you want to match the layout, etc. for the rest of the form, you'll want to follow the template of the form partial you are overriding.  You can look at the current version of the form in the active_scaffold gem file:  
+
+frontends/default/views/_form.html.erb
+
+So in our version, we'll change that default to:
+
+<% scope ||= nil %>
+<dl class="<%= column.css_class unless column.css_class.nil? %>">
+  <dt>
+    <label for="<%= active_scaffold_input_options(column, scope)[:id] %>"><%= column.label %> (<%= @record.currency%>)</label>
+  </dt>
+  <dd>
+    <%= active_scaffold_input_for column, scope %>
+    <% if column.description -%>
+      <span class="description"><%= column.description %></span>
+    <% end -%>
+  </dd>
+</dl>
+
+...in order to include the currency in the field label.  Now we could do other things here too like hook in a special javascript validation for that input field or format the field in some other special way.
+
+
+
+
+
+If you only want to replace the input portion of the form, you can create a helper method named:
+
+def _price_form_column(record, input_name)
+    some_special_money_input_field :record, :price, :name => :input_name
+end
 
 h1. Other Topics
-
-* Working with more complex data types (money)
 
 * Adding scaffolds with relationships
 ** Changing the presentation of fields
