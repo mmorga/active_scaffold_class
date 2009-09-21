@@ -56,7 +56,11 @@ Also you need to remove all of the view files that were created.
 
 rm app/views/albums/*
 
-Looking again, the UI has changed a bit, looks a little bit nicer.
+Fix up the routes.  In config/routes.rb
+
+map.resources :albums, :active_scaffold => true
+
+Restart the server.  Looking again, the UI has changed a bit, looks a little bit nicer.
 
 h2. Working with Dates
 
@@ -182,37 +186,174 @@ So in our version, we'll change that default to:
 
 ...in order to include the currency in the field label.  Now we could do other things here too like hook in a special javascript validation for that input field or format the field in some other special way.
 
-
-
-
-
 If you only want to replace the input portion of the form, you can create a helper method named:
 
 def _price_form_column(record, input_name)
     some_special_money_input_field :record, :price, :name => :input_name
 end
 
-h1. Other Topics
+h2. How About Relationships
 
-* Adding scaffolds with relationships
-** Changing the presentation of fields
-*** to_label
+One table isn't very realistic - let's make it a little more interesting.
 
-* Changing the input form fields
+script/generate scaffold create_artists first_name:string last_name:string
 
-** Form overrides
-*** Subforms    
-** Template overrides
+And into this migration add album_artists:
 
-* Search
-** Configuration
-** LiveSearch
+class CreateArtists < ActiveRecord::Migration
+  def self.up
+    create_table :artists do |t|
+      t.string :first_name
+      t.string :last_name
+      t.timestamps
+    end
+    
+    create_table :album_artists do |t|
+      t.references :artist
+      t.references :album
+      t.timestamps
+    end
+  end
 
-* Security
+  def self.down
+    drop_table :album_artists
+    drop_table :artists
+  end
+end
 
-* More Complex Uses
-** Embedding the scaffold on other pages
+Then remove the scaffolded views:
 
-* Rendering
-** Constraints
-** Nested Constraints
+rm app/views/artists/*.erb
+
+And replace the body of artist.rb with:
+
+active_scaffold
+
+Then create/update your models:
+
+class Artist < ActiveRecord::Base
+  has_many :album_artists
+  has_many :albums, :through => :album_artists
+end
+
+class AlbumArtist < ActiveRecord::Base
+  belongs_to :album
+  belongs_to :artist
+end
+
+class Album < ActiveRecord::Base
+  has_many :album_artists
+  has_many :artists, :through => :album_artists
+  
+  composed_of :price, :class_name => "Money", 
+      :mapping => [%w(price_in_cents cents), %w(currency currency)],
+      :converter => Proc.new {|value| value.to_money}
+end
+
+Now in your albums controller, modify your config.columns:
+
+config.columns = [:title, :release_date, :price, :artists]
+
+Now load up some data:
+
+Create your thoughtbot factory_girl factories, in test/factories.rb:
+
+Factory.define :artist do |a|
+  a.first_name 'John'
+  a.sequence(:last_name) {|n| "X#{n}" }
+end
+
+Factory.define :album do |a|
+  a.sequence(:title) {|n| "Superfly vol #{n}"}
+  a.release_date Date.today
+end
+
+Then in script console, you can play around and create a few albums and factories.  For example:
+
+Factory(:album, :artists => (1..3).collect {|n| Factory(:artist)})
+
+Ok, no look at it in the API.  The artists are shown, but they look like:
+
+#<Artist:0x232eab8>, #<Artist:0x232ea68>, #<Artist:0x232ea04>
+
+No very user friendly.  Turns out that active scaffold looks for a few methods to determine the textual display of a model.  They are: :to_label, :name, :label, :title, and finally :to_s. 
+
+So to create an active_scaffold specific method in your model, implement to_label in your artist model.
+
+You probably don't want the default edit behavior that you get.  You can make the associated artist view only when editing an album.
+
+In the album_controller.rb active_scaffold config block, add:
+
+Ok - this is better, but probably not great for the long term.  Instead, this is a prime candidate for the form overrides.
+
+h2. Search
+
+Once you get the route added and basic active scaffold in place, you get search for free.
+
+Active Scaffold also provides an ajax search capability via the live search API.  Look this up.
+
+h2. Template Overrides
+
+Any of the templates or partials in the active_scaffold views directory can by overridden by creating a file with the same name in the app/views/active_scaffold_overrides/ directory of your application.
+
+h2. Security
+
+h3. Selecting the current user method
+
+In your global config:
+
+config.security.current_user_method = :current_login
+config.security.default_permission = false
+
+Then implement current_login in your controller.
+
+h3. Permitting Actions (Controller Level)
+
+In each controller then, you can implement permissions by adding a method named "#{action}_authorized?"
+
+h3. Permissions (Model Level)
+
+#{column_name}_authorized_for_#{crud_action}?
+#{column_name}_authorized?
+authorized_for_#{crud_action}?
+
+h2. Embedded Scaffolds
+
+You can reuse the active scaffolds in other pages which makes a nice way to build up your composite objects (or make easier editing of your associated objects).
+
+h3. Rendering Scaffolds
+
+# render UsersController 
+render :active_scaffold => 'users'
+
+# the same, but this time change the heading to "Active Users"
+render :active_scaffold => 'users', :label => 'Active Users'
+
+# sorting by `name`, ascending
+render :active_scaffold => 'users', :sort => "name", :sort_direction => "ASC"
+
+h3. Constraints
+
+If you are rendering something on a page that is tied to a particular constraint (such as a foreign key), you can pass that constraint to the render call.  Examples:
+
+# render all entries for a user
+render :active_scaffold => 'entries', :constraints => { :user_id => @user.id }
+
+# render all active users
+render :active_scaffold => 'users', :constraints => { :status => "active" }
+
+h3. Conditions
+
+If you need a little more flexibility, you can use conditions for comparisons other than equality.
+
+# note: example hasn't been tested for typos or other obvious problems
+render :active_scaffold => 'users', :conditions => ['created_at > ?', Time.now - 5.days], :label => 'New Users'
+
+h2. Action Link
+
+The action link on a config allows you to modify the links used for scaffolds.  It is particularly useful if you have an association that isn't an active scaffold object and you want to link to the correct show/edit pages.
+
+For example:
+
+config.columns[:username].link
+

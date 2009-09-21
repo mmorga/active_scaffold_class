@@ -1,5 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :albums
+  map.resources :artists
+
+  map.resources :albums, :active_scaffold => true
 
   # The priority is based upon order of creation: first created -> highest priority.
 
