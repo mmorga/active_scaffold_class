@@ -1,0 +1,101 @@
+--- !ruby/object:Gem::Specification 
+name: ruby-graphviz
+version: !ruby/object:Gem::Version 
+  version: 0.9.0
+platform: ruby
+authors: 
+- Gregoire Lejeune
+autorequire: 
+bindir: bin
+cert_chain: []
+
+date: 2008-06-11 00:00:00 -05:00
+default_executable: ruby2gv
+dependencies: []
+
+description: Ruby/Graphviz provides an interface to layout and generate images of directed graphs in a variety of formats (PostScript, PNG, etc.) using GraphViz.
+email: gregoire.lejeune@free.fr
+executables: 
+- ruby2gv
+extensions: []
+
+extra_rdoc_files: 
+- README
+- ChangeLog
+- COPYING
+- AUTHORS
+files: 
+- ChangeLog
+- COPYING
+- README
+- AUTHORS
+- setup.rb
+- bin/ruby2gv
+- examples/arrowhead.rb
+- examples/HTML-Labels.rb
+- examples/maketest.sh
+- examples/p2p.rb
+- examples/sample01.rb
+- examples/sample02.rb
+- examples/sample03.rb
+- examples/sample04.rb
+- examples/sample05.rb
+- examples/sample07.rb
+- examples/sample08.rb
+- examples/sample09.rb
+- examples/sample10.rb
+- examples/sample11.rb
+- examples/sample12.rb
+- examples/sample13.rb
+- examples/sample14.rb
+- examples/sample15.rb
+- examples/sample16.rb
+- examples/sample17.rb
+- examples/sample18.rb
+- examples/sample19.rb
+- examples/sample20.rb
+- examples/shapes.rb
+- examples/test.xml
+- examples/testorder.rb
+- examples/testxml.rb
+- lib/graphviz
+- lib/graphviz/attrs.rb
+- lib/graphviz/constants.rb
+- lib/graphviz/edge.rb
+- lib/graphviz/node.rb
+- lib/graphviz/xml.rb
+- lib/graphviz.rb
+has_rdoc: true
+homepage: http://raa.ruby-lang.org/project/ruby-graphviz/
+licenses: []
+
+post_install_message: 
+rdoc_options: 
+- --title
+- Ruby/GraphViz
+- --main
+- README
+- --line-numbers
+require_paths: 
+- lib
+required_ruby_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      version: "0"
+  version: 
+required_rubygems_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      version: "0"
+  version: 
+requirements: []
+
+rubyforge_project: ruby-asp
+rubygems_version: 1.3.5
+signing_key: 
+specification_version: 2
+summary: Interface to the GraphViz graphing tool
+test_files: []
+

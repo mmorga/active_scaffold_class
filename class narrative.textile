@@ -17,8 +17,8 @@ h2. Requirements and Dependencies
 ** thoughtbot-factory_girl
 ** mislav-will_paginate
 ** mmorga-money
-** ruby-graphviz (if we have time)
-* Install graphviz also (which is required by the ruby-graphviz library)
+** calendar_date_select
+
 Starting off you'll want to run the template and create your baseline app framework.
 
 rails -m template.rb cdspin
@@ -167,14 +167,20 @@ Create a partial named _price_form_column.html.erb in the app/views/albums direc
 
 Now - if you want to match the layout, etc. for the rest of the form, you'll want to follow the template of the form partial you are overriding.  You can look at the current version of the form in the active_scaffold gem file:  
 
-frontends/default/views/_form.html.erb
+frontends/default/views/_form_attribute.html.erb
 
 So in our version, we'll change that default to:
 
 <% scope ||= nil %>
 <dl class="<%= column.css_class unless column.css_class.nil? %>">
   <dt>
-    <label for="<%= active_scaffold_input_options(column, scope)[:id] %>"><%= column.label %> (<%= @record.currency%>)</label>
+    <label for="<%= active_scaffold_input_options(column, scope)[:id] %>"><%= column.label %>
+        
+        
+         (<%= @record.currency%>)
+         
+         
+         </label>
   </dt>
   <dd>
     <%= active_scaffold_input_for column, scope %>
@@ -196,7 +202,7 @@ h2. How About Relationships
 
 One table isn't very realistic - let's make it a little more interesting.
 
-script/generate scaffold create_artists first_name:string last_name:string
+script/generate scaffold artists first_name:string last_name:string
 
 And into this migration add album_artists:
 
@@ -221,11 +227,13 @@ class CreateArtists < ActiveRecord::Migration
   end
 end
 
+rake db:migrate
+
 Then remove the scaffolded views:
 
 rm app/views/artists/*.erb
 
-And replace the body of artist.rb with:
+And replace the body of artist_controller.rb with:
 
 active_scaffold
 
@@ -270,7 +278,7 @@ end
 
 Then in script console, you can play around and create a few albums and factories.  For example:
 
-Factory(:album, :artists => (1..3).collect {|n| Factory(:artist)})
+Factory(:album, :artists => (1..3).collect {Factory(:artist)})
 
 Ok, no look at it in the API.  The artists are shown, but they look like:
 
@@ -283,6 +291,8 @@ So to create an active_scaffold specific method in your model, implement to_labe
 You probably don't want the default edit behavior that you get.  You can make the associated artist view only when editing an album.
 
 In the album_controller.rb active_scaffold config block, add:
+
+config.columns[:artists].form_ui = :select
 
 Ok - this is better, but probably not great for the long term.  Instead, this is a prime candidate for the form overrides.
 
