@@ -61,7 +61,7 @@ gem "thoughtbot-shoulda", :lib => "shoulda", :source => "http://gems.github.com"
 gem "thoughtbot-factory_girl", :lib => "factory_girl", :source => "http://gems.github.com"
 gem "mislav-will_paginate", :lib => "will_paginate", :source => "http://gems.github.com"
 gem "mmorga-money", :lib => "money", :source => "http://gems.github.com"
-gem "ruby-graphviz", :lib => "graphviz", :source => "http:www.rubyforge.org"
+# gem "ruby-graphviz", :lib => "graphviz", :source => "http:www.rubyforge.org"
 
 # Install plugins as git submodules
 plugin 'asset_packager',
